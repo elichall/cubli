@@ -1,6 +1,6 @@
 # ESP32 Cubli (V1)
 
-A 3D self-balancing reaction wheel inverted pendulum (Cubli) based on the ESP32 and SimpleFOC. This repository contains the V1 firmware for balancing on edges and corners using a Linear Quadratic Regulator (LQR) control scheme.
+A 3D self-balancing reaction wheel inverted pendulum (Cubli) based on the ESP32 and SimpleFOC. This repository contains the V1 firmware for balancing on edges using a Linear Quadratic Regulator (LQR) control scheme.
 
 ## System Architecture
 
