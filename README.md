@@ -2,6 +2,8 @@
 
 A 3D self-balancing reaction wheel inverted pendulum (Cubli) based on the ESP32 and SimpleFOC. This repository contains the V1 firmware for balancing on edges using a Linear Quadratic Regulator (LQR) control scheme.
 
+**Project Status: V1 Sunshined / V2 in Planning** > The V1 software architecture (State Estimation, FOC, and LQR) is fully operational and mathematically validated. Physical balancing is currently limited by the $V_{max}$ and $K_v$ ratings of the V1 gimbal motors, leading to actuator saturation before sufficient angular momentum can be transferred. Development is pivoting to V2 hardware specifications.
+
 ## System Architecture
 
 The control system decouples the hardware geometry from the balancing logic using coordinate transformations. The plant state is evaluated in the **Ground Frame** (aligned with gravity), while control efforts are mapped back to the **Natural Body Frame** (the physical motor axes).
@@ -30,6 +32,23 @@ $$\vec{u} = -K\vec{x}$$
 * **Motor Drivers:** 3x DRV8313 / L6234 (3-PWM logic)
 * **Motors:** 3x BLDC Gimbal Motors (7 Pole Pairs)
 * **Power:** 3S LiPo Battery (11.1V Nominal)
+
+## V1 Hardware Post-Mortem & V2 Roadmap
+
+Extensive hardware-in-the-loop testing and MATLAB kinematic modeling revealed that the V1 physical actuators are mathematically undersized for the chassis inertia.
+
+**The Momentum Limit**
+The system utilizes 90 KV motors powered by an 11.1V 3S LiPo, placing the absolute theoretical speed ceiling at ~1000 RPM. When the cube deviates from the $0.00$ rad balance point, the required corrective torque ($\tau_{cmd} = -Kx$) instantly demands a voltage exceeding the battery's physical limit. The reaction wheels cannot accelerate fast enough ($di/dt$) to generate the necessary counter-torque before the chassis falls past the recoverable $5^\circ$ threshold.
+
+**Driver Saturation**
+Because the LQR controller saturates attempting to overcome gravity, the high-frequency switching causes massive inductive flyback spikes from the motor coils. These spikes exceeded the breakdown voltage of the DRV8313 MOSFETs, leading to hardware failure during edge-drop testing.
+
+**V2 Hardware Upgrades**
+The V1 C++ LQR architecture and custom ground-frame complementary filter will be ported directly to V2. Hardware upgrades will include:
+* **Higher Torque Motors:** Lower KV rating with larger stators for higher peak impulse.
+* **Increased Voltage:** Transition to a 4S (14.8V) or 6S (22.2V) power system to drastically raise the RPM ceiling and increase the total angular momentum capacity ($L = I\omega$).
+* **Robust Motor Drivers:** Implementation of drivers with higher peak current ratings and dedicated transient voltage suppression (TVS) to safely handle high-frequency LQR commutation and flyback.
+* **Dual-Core Processing:** Migrating the State Estimation matrix math to ESP32 Core 0, reserving Core 1 exclusively for the 3-phase FOC commutation and LQR calculation to maximize $dt$ resolution.
 
 ## Pinout & Configuration (`Config.h`)
 
