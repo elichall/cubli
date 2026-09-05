@@ -20,3 +20,4 @@ Thumbs.db
 # Agent guidance (local-only, not part of the project deliverable)
 /AGENTS.md
 /.agents/
+/dev/
