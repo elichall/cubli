@@ -50,31 +50,14 @@ The V1 C++ LQR architecture and custom ground-frame complementary filter will be
 * **Robust Motor Drivers:** Implementation of drivers with higher peak current ratings and dedicated transient voltage suppression (TVS) to safely handle high-frequency LQR commutation and flyback.
 * **Dual-Core Processing:** Migrating the State Estimation matrix math to ESP32 Core 0, reserving Core 1 exclusively for the 3-phase FOC commutation and LQR calculation to maximize $dt$ resolution.
 
-## Pinout & Configuration (`Config.h`)
+**Toolchain & Environment Philosophy**
+V1 was built on PlatformIO with the Arduino framework, which abstracted away the ESP32's toolchain, build system, and peripheral communication (I2C, PWM, etc.). While the control logic (state estimation, FOC, LQR) held up, the surrounding environment was patchy and left the actual hardware interaction as a black box. V2 will move away from PlatformIO and Arduino-style abstraction layers in favor of self-handling the ESP32 toolchain, build process, and low-level peripheral drivers directly. This is a deliberate step toward learning embedded systems development at a lower level, rather than a strict technical requirement.
 
-| Component | ESP32 Pin / Channel | Notes |
-| :--- | :--- | :--- |
-| **I2C Bus** | SDA: 23, SCL: 22 | Requires pull-up resistors |
-| **Driver Enable** | EN: 33 | Global Enable for all 3 drivers |
-| **Motor X (0)** | IN: 25, 26, 27 | Mux Channel 3 |
-| **Motor Y (1)** | IN: 2, 5, 17 | Mux Channel 2 *(Note: GPIO 2 is strapped to boot mode)* |
-| **Motor Z (2)** | IN: 16, 4, 15 | Mux Channel 6 |
-
-## Software Dependencies
-
-This project is built using **PlatformIO**. Ensure the following libraries are included in your `platformio.ini`:
-
-1. `askuric/Simple FOC @ ^2.3.2`
-2. `tomstewart89/BasicLinearAlgebra @ ^5.0.0`
-3. `rfetick/MPU6050_light @ ^1.1.0`
-
-## File Structure
+## Repository Layout
 
 ```text
-📂 src
- ├── main.cpp         # Main execution loop and setup calls
- └── Cubli.cpp        # Class implementation, math, and LQR loops
-📂 include
- ├── Cubli.h          # Class definition and data structures
- ├── Config.h         # System constants, pinouts, and hardware specs
- └── gains.h          # Pre-calculated LQR gain matrices
+📂 v1-firmware   # ESP32 / PlatformIO C++ firmware (state estimation, FOC, LQR control loop)
+📂 v1-modeling   # MATLAB scripts deriving the LQR gains used by the firmware
+```
+
+See each subproject's README for build instructions, pinout, dependency versions, and file structure: [`v1-firmware/README.md`](v1-firmware/README.md), [`v1-modeling/README.md`](v1-modeling/README.md).

@@ -1,0 +1,22 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# MATLAB
+*.asv
+*.m~
+slprj/
+sccprj/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local backups made while editing
+*.bak
+
+# Agent guidance (local-only, not part of the project deliverable)
+/AGENTS.md
+/.agents/
